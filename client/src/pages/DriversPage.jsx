@@ -5,14 +5,16 @@ import {
 } from '@mui/material';
 import { 
   LocalShipping, Phone, Email, DirectionsCar, TwoWheeler, 
-  CheckCircle, DoNotDisturbOn, FiberManualRecord 
+  CheckCircle, DoNotDisturbOn, FiberManualRecord, Chat 
 } from '@mui/icons-material';
 import axios from 'axios';
 import API_URL from '../config';
+import ChatWidget from '../components/ChatWidget'; // Import Chat Widget
 
 const DriversPage = () => {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [chatDriver, setChatDriver] = useState(null); // Track which driver we are chatting with
 
   // --- 1. FETCH REAL DRIVERS ---
   useEffect(() => {
@@ -130,18 +132,20 @@ const DriversPage = () => {
                 {/* CONTACT ACTIONS */}
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <Button 
-                    variant="outlined" fullWidth size="small" startIcon={<Phone />}
+                    variant="outlined" size="small" startIcon={<Phone />}
                     href={`tel:${driver.phone || ''}`}
-                    sx={{ borderRadius: 2, borderColor: '#e2e8f0', color: '#64748b' }}
+                    sx={{ flex: 1, borderRadius: 2, borderColor: '#e2e8f0', color: '#64748b' }}
                   >
                     Call
                   </Button>
+                  
+                  {/* CHAT BUTTON */}
                   <Button 
-                    variant="outlined" fullWidth size="small" startIcon={<Email />}
-                    href={`mailto:${driver.email}`}
-                    sx={{ borderRadius: 2, borderColor: '#e2e8f0', color: '#64748b' }}
+                    variant="contained" size="small" startIcon={<Chat />}
+                    onClick={() => setChatDriver(driver)}
+                    sx={{ flex: 1, borderRadius: 2, bgcolor: '#1e293b' }}
                   >
-                    Email
+                    Chat
                   </Button>
                 </Box>
 
@@ -157,6 +161,18 @@ const DriversPage = () => {
           </Box>
         )}
       </Grid>
+
+      {/* --- ADMIN CHAT WIDGET POPUP --- */}
+      {chatDriver && (
+        <ChatWidget 
+          userId={chatDriver._id} // Connect to this driver's specific room
+          userName="Dispatcher"   // You are the Admin
+          targetName={chatDriver.name}
+          role="admin"
+          onClose={() => setChatDriver(null)}
+        />
+      )}
+
     </Box>
   );
 };
