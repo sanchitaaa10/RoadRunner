@@ -1,4 +1,4 @@
-console.log("--- NEW SERVER CODE LOADED ---"); // Verify this prints!
+console.log("--- SERVER RELOADING ---");
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -9,6 +9,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const User = require('./models/User'); // Import User model to save location
 
 const app = express();
 const server = http.createServer(app);
@@ -21,8 +22,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 
 // --- MONGODB CONNECTION ---
-// IMPORTANT: We removed { useNewUrlParser: true, useUnifiedTopology: true }
-// because Mongoose 6+ does this automatically and crashes if you include them.
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ DB Error:", err));
@@ -38,9 +37,22 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log(`⚡ New Client Connected: ${socket.id}`);
 
-  // 1. DRIVER TRACKING
-  socket.on('driverLocationUpdate', (data) => {
+  // 1. DRIVER TRACKING (Now saves to DB!)
+  socket.on('driverLocationUpdate', async (data) => {
+    // data = { driverId, lat, lng }
+    
+    // A. Broadcast to Admin Map (Real-time)
     io.emit('locationUpdate', data);
+
+    // B. Save to Database (Persistence)
+    try {
+      await User.findByIdAndUpdate(data.driverId, {
+        location: { lat: data.lat, lng: data.lng }
+      });
+      // console.log(`📍 Location saved for driver ${data.driverId}`);
+    } catch (err) {
+      console.error("Error saving location:", err);
+    }
   });
 
   // 2. CHAT SYSTEM
@@ -55,10 +67,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    // console.log('User disconnected');
   });
 });
 
 // --- START SERVER ---
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Import All Pages
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/Landingpage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardLayout from './pages/DashboardLayout';
