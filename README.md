@@ -50,25 +50,6 @@ The system uses **Socket.io** for instant communication and **Leaflet + OSRM** f
 * **Status Control:** Go Online/Offline to start or stop shift tracking.
 
 ---
-## Floder Structure 
-roadrunner-platform/<br>
-├── client/                 # Frontend (React + Vite)<br>
-│   ├── public/             # Static assets<br>
-│   ├── src/
-│   │   ├── components/     # Reusable UI (ChatWidget, Sidebar, etc.)<br>
-│   │   ├── context/        # Global State (AuthContext)<br>
-│   │   ├── pages/          # Dashboard, MapView, DriverApp, JobsPage<br>
-│   │   ├── App.jsx         # Main Router<br>
-│   │   └── main.jsx        # Entry point<br>
-│   └── package.json<br>
-│<br>
-├── server/                 # Backend (Node + Express)<br>
-│   ├── models/             # Mongoose Schemas (User, Job)<br>
-│   ├── routes/             # API Endpoints (Auth, Jobs)<br>
-│   ├── server.js           # Entry point + Socket.io Logic<br>
-│   └── package.json<br>
-│
-└── README.md               # Project Documentation<br>
 
 ## 🛠 Tech Stack<br>
 
